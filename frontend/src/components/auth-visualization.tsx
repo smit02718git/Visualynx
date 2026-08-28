@@ -46,7 +46,7 @@ export function AuthVisualization() {
       for (let ring = 0; ring < 3; ring += 1) {
         context.beginPath()
         context.setLineDash([12 + ring * 4, 10 + ring * 3])
-        context.arc(centerX, centerY, radius - ring * 20, frame * 0.002 * (ring % 2 ? -1 : 1), Math.PI * 2 + frame * 0.002 * (ring % 2 ? -1 : 1))
+        context.arc(centerX, centerY, Math.max(8, radius - ring * 20), frame * 0.002 * (ring % 2 ? -1 : 1), Math.PI * 2 + frame * 0.002 * (ring % 2 ? -1 : 1))
         context.strokeStyle = `rgba(100, 161, 255, ${0.36 - ring * 0.08})`
         context.stroke()
       }
