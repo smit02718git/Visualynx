@@ -7,7 +7,7 @@ const subjects = [
   {
     id: 'physics',
     label: 'PHYSICS',
-    title: 'Mechanics & Electrodynamics',
+    url: '/workspace/physics',
     description: 'Explore motion, forces, energy, waves, electricity and more.',
     accent: 'from-[#dfeeff] to-[#cfe5f5]',
     text: 'text-[#2a5a8d]',
@@ -17,7 +17,7 @@ const subjects = [
   {
     id: 'chemistry',
     label: 'CHEMISTRY',
-    title: 'Atoms & Bonding',
+    url: '/workspace/chemistry',
     description: 'Visualize atoms, molecules, reactions, bonding and chemical behavior.',
     accent: 'from-[#f6e6d7] to-[#f1d8c0]',
     text: 'text-[#b7793d]',
@@ -27,7 +27,7 @@ const subjects = [
   {
     id: 'math',
     label: 'MATHEMATICS',
-    title: 'Calculus & Geometry',
+    url: '/workspace/maths',
     description: 'Explore geometry, algebra, calculus and mathematical relationships.',
     accent: 'from-[#daeede] to-[#cfe7d0]',
     text: 'text-[#3a7b62]',
@@ -128,7 +128,7 @@ function SubjectVisual({ type }: { type: 'physics' | 'chemistry' | 'math' }) {
           <path key={`h-${index}`} d={`M30 ${30 + index * 15} H390`} />
         ))}
         {Array.from({ length: 13 }).map((_, index) => (
-          <path key={`v-${index}`} d={`M30 + ${index * 28} 20 V200`} />
+          <path key={`v-${index}`} d={`M${30 + index * 28} 20 V200`} />
         ))}
       </g>
       <path d="M20 160 L90 150 L120 130 L170 120 L210 90 L260 105 L330 60 L390 30" fill="none" stroke="#65c57e" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
@@ -167,10 +167,10 @@ export default async function DashboardPage() {
   const emailAddress = user.email || 'No email available'
 
   return (
-    <div className="[zoom:0.8] origin-top-left">
+    <div className="[zoom:0.8]">
       <div className="min-h-screen bg-[#f3f4f6] text-[#1d2433]">
         <header className="border-b border-[#dfe4ec] bg-[#f3f4f6]/95 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-[1280px] items-center justify-between px-6 py-2">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
             <div className="flex items-center gap-3">
               <BrandMark className="scale-130 origin-left" />
             </div>
@@ -188,14 +188,14 @@ export default async function DashboardPage() {
 
             <details className="relative">
               <summary className="list-none cursor-pointer">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d5dce8] bg-gradient-to-br from-[#f4e9d7] to-[#dfeafc] text-sm font-semibold text-[#3d4a5f] shadow-lg transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d5dce8] bg-linear-to-br from-[#f4e9d7] to-[#dfeafc] text-sm font-semibold text-[#3d4a5f] shadow-lg transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
                   {displayName.charAt(0).toUpperCase()}
                 </div>
               </summary>
 
               <div className="absolute right-0 top-[calc(100%+12px)] w-64 rounded-2xl border border-[#dfe4ec] bg-white p-4 shadow-xl shadow-slate-200/70">
                 <div className="mb-3 flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[#f4e9d7] to-[#dfeafc] text-sm font-semibold text-[#3d4a5f]">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-[#f4e9d7] to-[#dfeafc] text-sm font-semibold text-[#3d4a5f]">
                     {displayName.charAt(0).toUpperCase()}
                   </div>
                   <div className="min-w-0">
@@ -224,9 +224,9 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-[1200px] px-6 pb-10 pt-8">
+        <main className="mx-auto max-w-300 px-6 pb-10 pt-8">
           <section className="flex flex-col items-center pt-3 text-center">
-            <h1 className="bg-gradient-to-tr from-[#2563eb] via-[#cbd5e1] to-[#6366f1] bg-clip-text text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-transparent">
+            <h1 className="bg-linear-to-tr from-[#2563eb] via-[#cbd5e1] to-[#6366f1] bg-clip-text text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-transparent">
               What do you want to understand?
             </h1>
             <p className="mt-4 text-md text-[#576272]">
@@ -237,36 +237,38 @@ export default async function DashboardPage() {
           <section className="mt-10 grid gap-7 md:grid-cols-3">
             {subjects.map((subject) => (
               /* 1. Explicitly defined dimensions and relative positioning */
-              <div key={subject.id} className="group relative h-full min-h-[450px] w-full isolation-auto">
+                <div key={subject.id} className="group relative h-full min-h-112.5 w-full isolation-auto">
+                  <Link href={subject.url}>
 
-                {/* 2. Will-change and transform-gpu prevent layout recalculation during scale */}
-                <article
-                  className={`absolute inset-0 overflow-hidden rounded-[28px] border border-[#dfe7f2] bg-gradient-to-br ${subject.accent} p-0 shadow-lg transition-all duration-300 ease-out transform-gpu will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03] group-hover:shadow-2xl backface-hidden`}
-                >
-                  <div className="h-[205px] w-full border-b border-[#d9e2ec] bg-white/10 p-0">
-                    <SubjectVisual type={subject.visual} />
-                  </div>
+                  {/* 2. Will-change and transform-gpu prevent layout recalculation during scale */}
+                  <article
+                    className={`absolute inset-0 overflow-hidden rounded-[28px] border border-[#dfe7f2] bg-linear-to-br ${subject.accent} p-0 shadow-lg transition-all duration-300 ease-out transform-gpu will-change-transform group-hover:-translate-y-2 group-hover:scale-[1.03] group-hover:shadow-2xl backface-hidden`}
+                  >
+                    <div className="h-51.25 w-full border-b border-[#d9e2ec] bg-white/10 p-0">
+                      <SubjectVisual type={subject.visual} />
+                    </div>
 
-                  <div className="px-6 pb-6 pt-5">
-                    <h2 className={`mt-4 text-[2rem] font-semibold tracking-[-0.05em] ${subject.text}`}>
-                      {subject.label}
-                    </h2>
-                    <p className="mt-4 text-[1.04rem] leading-7 text-[#53637a]">
-                      {subject.description}
-                    </p>
-                    <button
-                      type="button"
-                      className={`mt-5 inline-flex items-center gap-2 text-[1.04rem] font-semibold ${subject.button}`}
-                    >
-                      Explore{' '}
-                      {subject.label
-                        .replace('MATHEMATICS', 'Mathematics')
-                        .replace('CHEMISTRY', 'Chemistry')
-                        .replace('PHYSICS', 'Physics')}
-                      <span aria-hidden="true"></span>
-                    </button>
-                  </div>
-                </article>
+                    <div className="px-6 pb-6 pt-5">
+                      <h2 className={`mt-4 text-[2rem] font-semibold tracking-tighter ${subject.text}`}>
+                        {subject.label}
+                      </h2>
+                      <p className="mt-4 text-[1.04rem] leading-7 text-[#53637a]">
+                        {subject.description}
+                      </p>
+                      <button
+                        type="button"
+                        className={`mt-5 inline-flex items-center gap-2 text-[1.04rem] font-semibold ${subject.button}`}
+                      >
+                        Explore{' '}
+                        {subject.label
+                          .replace('MATHEMATICS', 'Mathematics')
+                          .replace('CHEMISTRY', 'Chemistry')
+                          .replace('PHYSICS', 'Physics')}
+                        <span aria-hidden="true"></span>
+                      </button>
+                    </div>
+                  </article>
+                </Link>
               </div>
             ))}
           </section>
@@ -283,7 +285,7 @@ export default async function DashboardPage() {
 
             <button
               type="button"
-              className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#2f6de0] to-[#2d4ce0] px-6 py-4 text-[1.08rem] font-semibold text-white shadow-lg transition duration-300 hover:brightness-80"
+              className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-[#2f6de0] to-[#2d4ce0] px-6 py-4 text-[1.08rem] font-semibold text-white shadow-lg transition duration-300 hover:brightness-80"
             >
               Start a Quick Quiz <span className="ml-2 text-lg">→</span>
             </button>
