@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 import { BrandMark } from '@/components/brand-mark'
 import { navLinks as defaultNavLinks, type NavLink } from '@/lib/content'
@@ -36,20 +37,20 @@ export function SiteHeader({
         </nav>
 
         <div className="hidden items-center gap-5 md:flex">
-          <button
-            type="button"
+          <Link
+            href="/login"
             onClick={onSignIn}
             className="text-sm text-deep-muted transition-colors hover:text-deep-foreground"
           >
             Sign In
-          </button>
-          <button
-            type="button"
+          </Link>
+          <Link
+            href="/signup"
             onClick={onStart}
             className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Start Learning
-          </button>
+          </Link>
         </div>
 
         <button
@@ -78,20 +79,20 @@ export function SiteHeader({
               </a>
             ))}
             <div className="mt-2 flex items-center gap-3">
-              <button
-                type="button"
+              <Link
+                href="/login"
                 onClick={onSignIn}
                 className="flex-1 rounded-md border border-deep-border px-4 py-2 text-sm"
               >
                 Sign In
-              </button>
-              <button
-                type="button"
+              </Link>
+              <Link
+                href="/signup"
                 onClick={onStart}
                 className="flex-1 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
               >
                 Start Learning
-              </button>
+              </Link>
             </div>
           </nav>
         </div>
