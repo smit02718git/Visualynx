@@ -9,7 +9,7 @@ export function AuthLayout({ children }: { children: ReactNode }) {
       <aside className="relative hidden overflow-hidden bg-deep p-10 text-deep-foreground lg:flex lg:flex-col lg:justify-between xl:p-14">
         <AuthVisualization />
         <div className="absolute inset-0 opacity-30 [background-image:linear-gradient(var(--deep-border)_1px,transparent_1px),linear-gradient(90deg,var(--deep-border)_1px,transparent_1px)] [background-size:52px_52px]" />
-        <Link href="/" className="relative z-10"><BrandMark className="text-deep-foreground" /></Link>
+        <Link href="/" className="relative z-10"><BrandMark className="text-deep-foreground scale-150 origin-left" /></Link>
         <div className="relative z-10 max-w-md pb-4">
           <p className="font-mono text-xs uppercase tracking-[0.2em] text-primary">Visual learning lab</p>
           <h2 className="mt-5 text-4xl font-semibold leading-tight">Understand concepts, not just answers.</h2>
