@@ -48,7 +48,7 @@ export function WorkspaceSection({
             </div>
 
             {/* field visualization */}
-            <div className="relative min-h-[320px] p-6">
+            <div className="relative min-h-80 p-6">
               <div className="pointer-events-none absolute inset-0 grid-lines" aria-hidden="true" />
 
               <div className="relative flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
