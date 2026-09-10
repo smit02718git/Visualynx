@@ -1,15 +1,19 @@
+'use client'
+
 import type { LucideIcon } from 'lucide-react'
 import { ArrowLeft, BookOpen, Eye, PencilLine, TriangleAlert } from 'lucide-react'
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { useRouter, usePathname } from 'next/navigation'
 import { BrandMark } from '@/components/brand-mark'
+import { createClient } from '@/lib/supabase/client'
+import type { SubjectFeature, SubjectFeatureIcon } from '@/components/subject-workspace-config'
+import { useState } from 'react';
 
-export type SubjectFeature = {
-    icon: LucideIcon
-    title: string
-    description: string
-    tone: string
+const featureIcons: Record<SubjectFeatureIcon, LucideIcon> = {
+    eye: Eye,
+    'book-open': BookOpen,
+    'triangle-alert': TriangleAlert,
+    'pencil-line': PencilLine,
 }
 
 export type SubjectWorkspacePageProps = {
@@ -47,19 +51,36 @@ export function SubjectWorkspacePage({
     const displayName = user?.name || 'User'
     const emailAddress = user?.email || 'No email available'
 
+    const [topic, setTopic] = useState('');
+    const router = useRouter();
+    const pathname = usePathname(); // This will be '/workspace/physics'
+
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!topic.trim()) return;
+
+        // Format the topic name into a clean slug (e.g., "Projectile Motion" -> "projectile-motion")
+        const formattedConcept = topic.trim().toLowerCase().replace(/\s+/g, '-');
+
+        // Navigate to /workspace/physics?concept={concept-name}
+        router.push(`${pathname}?concept=${encodeURIComponent(formattedConcept)}`);
+
+        
+    };
+
     return (
         <div className="zoom-[0.9] bg-[#f3f4f6] text-[#101b2f]">
             <header className="w-full border-b border-[#dfe7f2] bg-[#f4f6f9]/95 backdrop-blur-sm py-4 flex justify-center">
                 {/* FIXED: Explicitly grid-cols-3 forces three strict horizontal blocks */}
                 <div className='w-[85%] grid grid-cols-3 items-center'>
-                    
+
                     {/* 1. LEFT COLUMN: Back button and Brandmark */}
                     <div className="flex items-center gap-4 justify-self-start">
                         <Link href="/dashboard" className="inline-flex items-center gap-2 text-gray-900 hover:underline shrink-0">
                             <ArrowLeft className="h-4 w-4" />
                             <span className="whitespace-nowrap">Back to Dashboard</span>
                         </Link>
-                        <div className="h-5 w-px bg-black/20 shrink-0"></div>                     
+                        <div className="h-5 w-px bg-black/20 shrink-0"></div>
                         <div className="shrink-0">
                             <BrandMark className="text-[1.1rem] font-semibold tracking-[-0.04em] text-[#1d2d4d]" />
                         </div>
@@ -94,11 +115,11 @@ export function SubjectWorkspacePage({
                                     </div>
 
                                     <form
-                                        action={async () => {
-                                            'use server'
-                                            const supabase = await createClient()
+                                        onSubmit={async (event) => {
+                                            event.preventDefault()
+                                            const supabase = createClient()
                                             await supabase.auth.signOut()
-                                            redirect('/login')
+                                            router.replace('/login')
                                         }}
                                     >
                                         <button
@@ -135,24 +156,28 @@ export function SubjectWorkspacePage({
                         Enter any {label.toLowerCase()} concept and Visualynx will build an interactive learning experience with explanations, visualizations, formulas, common mistakes and practice.
                     </p>
 
-                    <div className={`mt-8 overflow-hidden rounded-[26px] border border-[#dfe7f2] bg-white/80 shadow-[0_12px_28px_rgba(135,155,185,0.12)] backdrop-blur-sm scale-90 focus:outline-none focus-within:ring-2 ${ringColor} transition`}>
+                    <form
+                        onSubmit={handleSubmit}
+                        className={`mt-8 overflow-hidden rounded-[26px] border border-[#dfe7f2] bg-white/80 shadow-[0_12px_28px_rgba(135,155,185,0.12)] backdrop-blur-sm scale-90 focus:outline-none focus-within:ring-2 ${ringColor} transition`}
+                    >
                         <div className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                             <input
                                 aria-label="Search concept"
                                 type="text"
-                                defaultValue=""
+                                value={topic}
+                                onChange={(e) => setTopic(e.target.value)}
                                 placeholder={promptPlaceholder}
                                 className={`w-full rounded-[16px] border border-transparent bg-transparent px-4 py-2 text-xl placeholder:text-[0.95rem] text-[#2a3248] placeholder:text-[#8a96ad] focus:outline-none focus:ring-0 ${ringColor}`}
                             />
 
                             <button
-                                type="button"
+                                type="submit"
                                 className={`inline-flex items-center justify-center rounded-[16px] px-5 py-4 text-sm font-semibold text-white shadow-[0_12px_22px_rgba(51,95,208,0.28)] transition hover:brightness-90 sm:min-w-60 ${accentStrong}`}
                             >
                                 {badgeText}
                             </button>
                         </div>
-                    </div>
+                    </form>
 
                     <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
                         {chips.map((chip) => (
@@ -168,23 +193,27 @@ export function SubjectWorkspacePage({
                 </div>
 
                 <div className="mx-auto mt-18 grid max-w-245 gap-4 pt-16 sm:grid-cols-2 xl:grid-cols-4">
-                    {features.map(({ icon: Icon, title, description, tone }) => (
-                        <div
-                            key={title}
-                            className="flex items-center gap-3 rounded-[18px] border border-[#dfe7f2] bg-[#f7f9fc] px-4 py-4 shadow-[0_8px_18px_rgba(147,163,190,0.08)] scale-90 transition duration-200 hover:scale-95"
-                        >
-                            <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone}`}>
-                                <Icon className="h-5 w-5 text-[#2b6ad9]" />
-                            </div>
+                    {features.map(({ icon, title, description, tone }) => {
+                        const Icon = featureIcons[icon]
 
-                            <div className="min-w-0">
-                                <div className="text-[0.76rem] font-semibold tracking-[0.18em] text-[#4a648f] uppercase">
-                                    {title}
+                        return (
+                            <div
+                                key={title}
+                                className="flex items-center gap-3 rounded-[18px] border border-[#dfe7f2] bg-[#f7f9fc] px-4 py-4 shadow-[0_8px_18px_rgba(147,163,190,0.08)] scale-90 transition duration-200 hover:scale-95"
+                            >
+                                <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${tone}`}>
+                                    <Icon className="h-5 w-5 text-[#2b6ad9]" />
                                 </div>
-                                <div className="mt-1 text-base font-medium text-[#1b2439]">{description}</div>
+
+                                <div className="min-w-0">
+                                    <div className="text-[0.76rem] font-semibold tracking-[0.18em] text-[#4a648f] uppercase">
+                                        {title}
+                                    </div>
+                                    <div className="mt-1 text-base font-medium text-[#1b2439]">{description}</div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
             </main>
         </div>
@@ -192,75 +221,3 @@ export function SubjectWorkspacePage({
     )
 }
 
-export const defaultFeatureTiles = [
-    {
-        icon: Eye,
-        title: 'Visualize',
-        description: 'Interactive simulations',
-        tone: 'bg-[#eaf3ff]',
-    },
-    {
-        icon: BookOpen,
-        title: 'Understand',
-        description: 'AI explanations',
-        tone: 'bg-[#eaf3ff]',
-    },
-    {
-        icon: TriangleAlert,
-        title: 'Avoid Mistakes',
-        description: 'Common misconceptions',
-        tone: 'bg-[#eaf3ff]',
-    },
-    {
-        icon: PencilLine,
-        title: 'Practice',
-        description: 'Interactive quizzes',
-        tone: 'bg-[#eaf3ff]',
-    },
-] as const
-
-export function getSubjectPageConfig(subject: 'physics' | 'chemistry' | 'maths') {
-    const configs = {
-        physics: {
-            label: 'PHYSICS',
-            title: 'What do you want to understand?',
-            workspaceName: 'Physics Workspace',
-            accent: 'from-[#6fa9ee] via-[#a9c9f3] to-[#d8efff]',
-            accentStrong: 'bg-[#2f6fe0]',
-            accentSoft: 'bg-[#eaf4ff]',
-            ringColor: 'focus-within:ring-[#2f6fe0]',
-            badgeText: 'Build Learning Experience →',
-            promptPlaceholder: 'e.g. Projectile Motion, Newton\'s Laws, Circular Motion...',
-            chips: ['Projectile Motion', 'Newton\'s Laws', 'Work & Energy', 'Waves', 'Circular Motion', 'Gravity'],
-            features: defaultFeatureTiles,
-        },
-        chemistry: {
-            label: 'CHEMISTRY',
-            title: 'What do you want to understand?',
-            workspaceName: 'Chemistry Workspace',
-            accent: 'from-[#efb77c] via-[#f3d3ae] to-[#f9edd5]',
-            accentStrong: 'bg-[#d8842d]',
-            accentSoft: 'bg-[#fff3e7]',
-            ringColor: 'focus-within:ring-[#d8842d]',
-            badgeText: 'Build Learning Experience →',
-            promptPlaceholder: 'e.g. Acids & Bases, Bonding, Stoichiometry...',
-            chips: ['Acids & Bases', 'Bonding', 'Redox', 'Solutions', 'Equilibrium', 'Thermochemistry'],
-            features: defaultFeatureTiles,
-        },
-        maths: {
-            label: 'MATHEMATICS',
-            title: 'What do you want to understand?',
-            workspaceName: 'Maths Workspace',
-            accent: 'from-[#7bc09a] via-[#bfe6c9] to-[#ddf3e3]',
-            accentStrong: 'bg-[#3b9d74]',
-            accentSoft: 'bg-[#ecfaf2]',
-            ringColor: 'focus-within:ring-[#3b9d74]',
-            badgeText: 'Build Learning Experience →',
-            promptPlaceholder: 'e.g. Calculus, Trigonometry, Algebraic Functions...',
-            chips: ['Calculus', 'Algebra', 'Geometry', 'Trigonometry', 'Probability', 'Functions'],
-            features: defaultFeatureTiles,
-        },
-    } as const
-
-    return configs[subject]
-}
