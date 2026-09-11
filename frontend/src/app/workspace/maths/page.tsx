@@ -6,6 +6,8 @@ import VizSandbox from "@/components/simulation-renderer";
 import type { VisualizationConfig } from "@/types/visualization";
 import { BrandMark } from '@/components/brand-mark'
 import Link from 'next/link'
+import type { ConceptExplanationData } from "@/types/explaination";
+import ConceptCard from '@/components/learn-section';
 
 interface PageProps {
   searchParams: Promise<{ concept?: string }>;
@@ -49,7 +51,29 @@ export default async function Page({ searchParams }: PageProps) {
       return res.json();
     }
 
+    async function getExplainationData() {
+      // Call the specific FastAPI visualization endpoint
+      const res = await fetch('http://127.0.0.1:8000/api/learn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: "maths",
+          topic: concept
+        }),
+        cache: 'no-store', // Ensures fresh data calculation on every render
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch visualization payload');
+      }
+
+      return res.json();
+    }
+
     const visualization: VisualizationConfig = await getVisualizationData();
+    const explaination: ConceptExplanationData = await getExplainationData();
     const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     const emailAddress = user.email || 'No email available'
 
@@ -108,8 +132,9 @@ export default async function Page({ searchParams }: PageProps) {
             </div>
           </div>
         </header>
-        <main className="flex min-h-screen items-center justify-left bg-slate-50 p-6">
+        <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
           <VizSandbox config={visualization} />
+          <ConceptCard data={explaination} />
         </main>
       </main>
     );

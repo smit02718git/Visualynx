@@ -108,7 +108,7 @@ class VizConfigSchema(BaseModel):
     sliders: list[ControlSlider] = Field(
         description=(
             "Interactive controls for the visualization. "
-            "Use 1-5 sliders when useful. Do not create unnecessary sliders."
+            "Use 1-6 sliders when useful. Do not create unnecessary sliders."
         )
     )
 
@@ -151,7 +151,7 @@ class VizConfigSchema(BaseModel):
 # GENERATOR ENGINE
 # ============================================================
 
-def generate_visualization_data(subject: str, concept: str) -> dict:
+async def generate_visualization_data(subject: str, concept: str) -> dict:
     api_key = os.getenv("GEMINI_API_KEY_1")
 
     if not api_key:
@@ -161,7 +161,7 @@ def generate_visualization_data(subject: str, concept: str) -> dict:
 
     # Initialize Gemini.
     llm = ChatGoogleGenerativeAI(
-        model="gemini-3.6-flash",
+        model="gemini-3.5-flash",
         google_api_key=api_key,
         timeout=60,
         max_retries=1,
@@ -547,7 +547,7 @@ Generate the complete interactive visualization configuration.
     # GENERATE STRUCTURED RESPONSE
     # ========================================================
 
-    response_model = structured_llm.invoke(
+    response_model = await structured_llm.ainvoke(
         [
             ("system", system_instruction),
             ("user", user_prompt),
