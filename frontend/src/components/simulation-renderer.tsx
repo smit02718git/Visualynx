@@ -369,7 +369,7 @@ export default function VizSandbox({ config }: VizSandboxProps) {
 
 
     return (
-        <div className="flex h-full min-h-0 w-1/2 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
+        <div className="flex h-full min-h-0 w-[48%] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-md">
 
             {/* ================================================= */}
             {/* MAIN CONTENT                                      */}

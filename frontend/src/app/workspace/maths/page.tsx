@@ -6,8 +6,9 @@ import VizSandbox from "@/components/simulation-renderer";
 import type { VisualizationConfig } from "@/types/visualization";
 import { BrandMark } from '@/components/brand-mark'
 import Link from 'next/link'
+import ConceptCard from "@/components/learn-section";
+import WorkspaceSectionNav from "@/components/workspace-section-nav";
 import type { ConceptExplanationData } from "@/types/explaination";
-import ConceptCard from '@/components/learn-section';
 
 interface PageProps {
   searchParams: Promise<{ concept?: string }>;
@@ -134,7 +135,7 @@ export default async function Page({ searchParams }: PageProps) {
         </header>
         <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
           <VizSandbox config={visualization} />
-          <ConceptCard data={explaination} />
+          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} />
         </main>
       </main>
     );

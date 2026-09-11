@@ -10,7 +10,7 @@ export default function ConceptCard({ data }: ConceptCardProps) {
 
   return (
     // Used `w-1/2` as requested, and `ms-auto` (margin-start: auto) to push it to the right
-    <div className="w-1/2 ms-auto p-6 text-zinc-900 border border-zinc-200 rounded-2xl shadow-md">
+    <div className="w-full p-6 text-zinc-900">
       {/* Question Header */}
       <div className="mb-6 border-b border-zinc-100 pb-4">
         <span className="inline-block px-3 py-1 mb-2 text-xs font-semibold tracking-wider text-indigo-600 uppercase bg-indigo-50 rounded-full">
