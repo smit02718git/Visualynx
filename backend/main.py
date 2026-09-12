@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from viz_engine import generate_visualization_data
 from learn_engine import explain_concept
+from formulas_engine import get_concept_formulas
 import uvicorn
 
 app = FastAPI()
@@ -33,6 +34,13 @@ async def learn_concept(data: InputData):
     topic = data.topic
 
     return await explain_concept(subject, topic)
+
+@app.post("/api/formulas")
+async def concept_formulas(data: InputData):
+    subject = data.subject
+    topic = data.topic
+
+    return await get_concept_formulas(subject, topic)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

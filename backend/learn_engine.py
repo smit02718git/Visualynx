@@ -30,11 +30,11 @@ async def explain_concept(subject: str, concept: str) -> ConceptExplanation:
     Generates a structured explanation for a given concept in a subject using LangChain and Gemini.
     """
 
-    api_key = os.getenv("GEMINI_API_KEY_1")
+    api_key = os.getenv("GEMINI_API_KEY_2")
 
     if not api_key:
         raise ValueError(
-            "Missing GEMINI_API_KEY_1 value inside server configuration."
+            "Missing GEMINI_API_KEY_2 value inside server configuration."
         )
 
     llm = ChatGoogleGenerativeAI(

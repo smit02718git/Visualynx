@@ -10,10 +10,11 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 
-type WorkspaceSection = 'learn' | 'formulas' | 'mistakes' | 'ask-ai' | 'revision' | 'quiz'
+type WorkspaceSection = 'learn' | 'formulas' | 'mistakes' | 'ask-ai' | 'quiz'
 
 type WorkspaceSectionNavProps = {
     learnContent: ReactNode
+    formulasContent: ReactNode
 }
 
 const sections: Array<{
@@ -25,23 +26,21 @@ const sections: Array<{
     { id: 'formulas', label: 'Formulas', icon: Calculator },
     { id: 'mistakes', label: 'Mistakes', icon: CircleAlert },
     { id: 'ask-ai', label: 'Ask AI', icon: MessageCircleDashed },
-    // { id: 'revision', label: 'Revision', icon: FastForward },
 ]
 
 const placeholderContent: Record<Exclude<WorkspaceSection, 'learn' | 'quiz'>, string> = {
     formulas: 'This is the formulas section.',
     mistakes: 'This is the mistakes section.',
     'ask-ai': 'This is the Ask AI section.',
-    revision: 'This is the revision section.',
 }
 
-export default function WorkspaceSectionNav({ learnContent }: WorkspaceSectionNavProps) {
+export default function WorkspaceSectionNav({ learnContent, formulasContent }: WorkspaceSectionNavProps) {
     const [activeSection, setActiveSection] = useState<WorkspaceSection>('learn')
 
     return (
         <section className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:justify-end">
             <div className="min-w-0 flex-1 rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-[0_12px_28px_rgba(135,155,185,0.12)]">
-                {activeSection === 'learn' ? learnContent : activeSection === 'quiz' ? (
+                {activeSection === 'learn' ? learnContent : activeSection === 'formulas' ? formulasContent : activeSection === 'quiz' ?(
                     <div className="flex min-h-64 items-center justify-center text-center text-sm text-[#5d6982]">
                         This is the quiz section.
                     </div>
