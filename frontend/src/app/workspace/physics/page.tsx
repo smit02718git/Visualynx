@@ -6,11 +6,13 @@ import VizSandbox from "@/components/simulation-renderer";
 import { BrandMark } from '@/components/brand-mark'
 import Link from 'next/link'
 import ConceptCard from "@/components/learn-section";
-import FormulaSection from '@/components/formulas_section';
+import FormulaSection from '@/components/formulas-section';
+import CommonMistakesSection from '@/components/common-mistakes-section';
 import WorkspaceSectionNav from "@/components/workspace-section-nav";
 import type { VisualizationConfig } from "@/types/visualization";
 import type { ConceptExplanationData } from "@/types/explaination";
 import type { ConceptFormulasData } from "@/types/formulas";
+import type { ConceptMistakesData } from '@/types/mistakes';
 
 interface PageProps {
   searchParams: Promise<{ concept?: string }>;
@@ -96,9 +98,31 @@ export default async function Page({ searchParams }: PageProps) {
       return res.json();
     }
 
+    async function getMistakes() {
+      // Call the specific FastAPI visualization endpoint
+      const res = await fetch('http://127.0.0.1:8000/api/mistakes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subject: "physics",
+          topic: concept
+        }),
+        cache: 'no-store', // Ensures fresh data calculation on every render
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch common mistakes');
+      }
+
+      return res.json();
+    }
+
     const visualization: VisualizationConfig = await getVisualizationData();
     const explaination: ConceptExplanationData = await getExplainationData();
     const formulas: ConceptFormulasData = await getFormulas();
+    const mistakes: ConceptMistakesData = await getMistakes();
     const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     const emailAddress = user.email || 'No email available'
 
@@ -159,7 +183,7 @@ export default async function Page({ searchParams }: PageProps) {
         </header>
         <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
           <VizSandbox config={visualization} />
-          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} />
+          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />}/>
         </main>
       </main>
     );

@@ -170,23 +170,30 @@ export default async function DashboardPage() {
     <div className="[zoom:0.8]">
       <div className="min-h-screen bg-[#f3f4f6] text-[#1d2433]">
         <header className="border-b border-[#dfe4ec] bg-[#f3f4f6]/95 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
-            <div className="flex items-center gap-3">
+          <div className="mx-auto flex max-w-7xl items-center grid grid-cols-3 px-6 py-2">
+            <div className="flex items-center gap-3 justify-self-start">
               <BrandMark className="scale-130 origin-left" />
             </div>
 
-            <nav className="hidden items-center gap-2 rounded-xl border border-[#dfe4ec] bg-white/50 px-3 py-2 md:flex">
-              {['Physics', 'Chemistry', 'Maths', 'Quiz'].map((item, index) => (
-                <button
-                  key={item}
-                  type="button"
-                  className={'rounded-lg px-4 py-2 text-sm text-[#394760] transition hover:bg-[#eef3fb]'}>
-                  {item}
-                </button>
+            <nav className="hidden items-center justify-self-center gap-2 rounded-xl border border-[#dfe4ec] bg-white/50 px-3 py-2 md:flex">
+              {subjects.map((subject) => (
+                <Link key={subject.id} href={subject.url}>
+                  <button
+                    key={subject.id}
+                    type="button"
+                    className={'rounded-lg px-4 py-2 text-sm text-[#394760] transition hover:bg-[#eef3fb]'}>
+                    {subject.label}
+                  </button>
+                </Link>
               ))}
+              <button
+                type="button"
+                className={'rounded-lg px-4 py-2 text-sm text-[#394760] transition hover:bg-[#eef3fb]'}>
+                QUIZ
+              </button>
             </nav>
 
-            <details className="relative">
+            <details className="relative justify-self-end">
               <summary className="list-none cursor-pointer">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#d5dce8] bg-linear-to-br from-[#f4e9d7] to-[#dfeafc] text-sm font-semibold text-[#3d4a5f] shadow-lg transition duration-300 ease-in-out hover:-translate-y-1 hover:scale-105 hover:shadow-xl">
                   {displayName.charAt(0).toUpperCase()}
@@ -237,8 +244,8 @@ export default async function DashboardPage() {
           <section className="mt-10 grid gap-7 md:grid-cols-3">
             {subjects.map((subject) => (
               /* 1. Explicitly defined dimensions and relative positioning */
-                <div key={subject.id} className="group relative h-full min-h-112.5 w-full isolation-auto">
-                  <Link href={subject.url}>
+              <div key={subject.id} className="group relative h-full min-h-112.5 w-full isolation-auto">
+                <Link href={subject.url}>
 
                   {/* 2. Will-change and transform-gpu prevent layout recalculation during scale */}
                   <article

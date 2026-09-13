@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from viz_engine import generate_visualization_data
 from learn_engine import explain_concept
 from formulas_engine import get_concept_formulas
+from common_mistakes_engine import get_concept_mistakes
 import uvicorn
 
 app = FastAPI()
@@ -41,6 +42,13 @@ async def concept_formulas(data: InputData):
     topic = data.topic
 
     return await get_concept_formulas(subject, topic)
+
+@app.post("/api/mistakes")
+async def concept_formulas(data: InputData):
+    subject = data.subject
+    topic = data.topic
+
+    return await get_concept_mistakes(subject, topic)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

@@ -15,6 +15,7 @@ type WorkspaceSection = 'learn' | 'formulas' | 'mistakes' | 'ask-ai' | 'quiz'
 type WorkspaceSectionNavProps = {
     learnContent: ReactNode
     formulasContent: ReactNode
+    mistakesContent: ReactNode
 }
 
 const sections: Array<{
@@ -34,13 +35,13 @@ const placeholderContent: Record<Exclude<WorkspaceSection, 'learn' | 'quiz'>, st
     'ask-ai': 'This is the Ask AI section.',
 }
 
-export default function WorkspaceSectionNav({ learnContent, formulasContent }: WorkspaceSectionNavProps) {
+export default function WorkspaceSectionNav({ learnContent, formulasContent, mistakesContent }: WorkspaceSectionNavProps) {
     const [activeSection, setActiveSection] = useState<WorkspaceSection>('learn')
 
     return (
         <section className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:justify-end">
             <div className="min-w-0 flex-1 rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-[0_12px_28px_rgba(135,155,185,0.12)]">
-                {activeSection === 'learn' ? learnContent : activeSection === 'formulas' ? formulasContent : activeSection === 'quiz' ?(
+                {activeSection === 'learn' ? learnContent : activeSection === 'formulas' ? formulasContent : activeSection === 'mistakes' ? mistakesContent : activeSection === 'quiz' ?(
                     <div className="flex min-h-64 items-center justify-center text-center text-sm text-[#5d6982]">
                         This is the quiz section.
                     </div>
