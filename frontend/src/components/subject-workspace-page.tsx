@@ -52,6 +52,7 @@ export function SubjectWorkspacePage({
     const emailAddress = user?.email || 'No email available'
 
     const [topic, setTopic] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const router = useRouter();
     const pathname = usePathname(); // This will be '/workspace/physics'
 
@@ -63,6 +64,7 @@ export function SubjectWorkspacePage({
         const formattedConcept = topic.trim().toLowerCase().replace(/\s+/g, '-');
 
         // Navigate to /workspace/physics?concept={concept-name}
+        setIsSubmitting(true);
         router.push(`${pathname}?concept=${encodeURIComponent(formattedConcept)}`);
 
         
@@ -70,6 +72,17 @@ export function SubjectWorkspacePage({
 
     return (
         <div className="zoom-[0.9] bg-[#f3f4f6] text-[#101b2f]">
+            {isSubmitting && (
+                <div className="fixed inset-0 z-50 flex min-h-screen items-center justify-center bg-[#f3f4f6]/95 px-6 text-[#1d2433] backdrop-blur-sm">
+                    <div className="flex flex-col items-center text-center" role="status" aria-live="polite">
+                        <div className="h-10 w-10 animate-spin rounded-full border-4 border-[#dfe7f2] border-t-[#2f6fe0]" />
+                        <p className="mt-5 text-lg font-semibold">Building your learning workspace</p>
+                        <p className="mt-2 max-w-sm text-sm text-[#5c6d86]">
+                            We are preparing the explanation, visual, formulas, and practice guidance.
+                        </p>
+                    </div>
+                </div>
+            )}
             <header className="w-full border-b border-[#dfe7f2] bg-[#f4f6f9]/95 backdrop-blur-sm py-4 flex justify-center">
                 {/* FIXED: Explicitly grid-cols-3 forces three strict horizontal blocks */}
                 <div className='w-[85%] grid grid-cols-3 items-center'>
@@ -172,9 +185,10 @@ export function SubjectWorkspacePage({
 
                             <button
                                 type="submit"
-                                className={`inline-flex items-center justify-center rounded-[16px] px-5 py-4 text-sm font-semibold text-white shadow-[0_12px_22px_rgba(51,95,208,0.28)] transition hover:brightness-90 sm:min-w-60 ${accentStrong}`}
+                                disabled={isSubmitting}
+                                className={`inline-flex items-center justify-center rounded-[16px] px-5 py-4 text-sm font-semibold text-white shadow-[0_12px_22px_rgba(51,95,208,0.28)] transition hover:brightness-90 disabled:cursor-wait disabled:opacity-70 sm:min-w-60 ${accentStrong}`}
                             >
-                                {badgeText}
+                                {isSubmitting ? 'Preparing your workspace...' : badgeText}
                             </button>
                         </div>
                     </form>

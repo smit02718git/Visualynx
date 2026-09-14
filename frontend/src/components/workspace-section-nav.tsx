@@ -16,6 +16,7 @@ type WorkspaceSectionNavProps = {
     learnContent: ReactNode
     formulasContent: ReactNode
     mistakesContent: ReactNode
+    chatContent?: ReactNode
 }
 
 const sections: Array<{
@@ -35,21 +36,27 @@ const placeholderContent: Record<Exclude<WorkspaceSection, 'learn' | 'quiz'>, st
     'ask-ai': 'This is the Ask AI section.',
 }
 
-export default function WorkspaceSectionNav({ learnContent, formulasContent, mistakesContent }: WorkspaceSectionNavProps) {
+export default function WorkspaceSectionNav({ learnContent, formulasContent, mistakesContent, chatContent }: WorkspaceSectionNavProps) {
     const [activeSection, setActiveSection] = useState<WorkspaceSection>('learn')
 
     return (
         <section className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:justify-end">
             <div className="min-w-0 flex-1 rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-[0_12px_28px_rgba(135,155,185,0.12)]">
-                {activeSection === 'learn' ? learnContent : activeSection === 'formulas' ? formulasContent : activeSection === 'mistakes' ? mistakesContent : activeSection === 'quiz' ?(
+                <div className={activeSection === 'learn' ? '' : 'hidden'}>{learnContent}</div>
+                <div className={activeSection === 'formulas' ? '' : 'hidden'}>{formulasContent}</div>
+                <div className={activeSection === 'mistakes' ? '' : 'hidden'}>{mistakesContent}</div>
+                <div className={activeSection === 'ask-ai' ? '' : 'hidden'}>
+                    {chatContent ?? (
+                        <div className="flex min-h-64 items-center justify-center text-center text-sm text-[#5d6982]">
+                            {placeholderContent['ask-ai']}
+                        </div>
+                    )}
+                </div>
+                <div className={activeSection === 'quiz' ? '' : 'hidden'}>
                     <div className="flex min-h-64 items-center justify-center text-center text-sm text-[#5d6982]">
                         This is the quiz section.
                     </div>
-                ) : (
-                    <div className="flex min-h-64 items-center justify-center text-center text-sm text-[#5d6982]">
-                        {placeholderContent[activeSection]}
-                    </div>
-                )}
+                </div>
             </div>
             <nav
                 aria-label="Learning sections"

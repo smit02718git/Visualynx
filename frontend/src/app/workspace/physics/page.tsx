@@ -8,6 +8,7 @@ import Link from 'next/link'
 import ConceptCard from "@/components/learn-section";
 import FormulaSection from '@/components/formulas-section';
 import CommonMistakesSection from '@/components/common-mistakes-section';
+import ChatSection from '@/components/chat-section';
 import WorkspaceSectionNav from "@/components/workspace-section-nav";
 import type { VisualizationConfig } from "@/types/visualization";
 import type { ConceptExplanationData } from "@/types/explaination";
@@ -119,10 +120,12 @@ export default async function Page({ searchParams }: PageProps) {
       return res.json();
     }
 
-    const visualization: VisualizationConfig = await getVisualizationData();
-    const explaination: ConceptExplanationData = await getExplainationData();
-    const formulas: ConceptFormulasData = await getFormulas();
-    const mistakes: ConceptMistakesData = await getMistakes();
+    const [visualization, explaination, formulas, mistakes] = await Promise.all([
+      getVisualizationData(),
+      getExplainationData(),
+      getFormulas(),
+      getMistakes(),
+    ]) as [VisualizationConfig, ConceptExplanationData, ConceptFormulasData, ConceptMistakesData];
     const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     const emailAddress = user.email || 'No email available'
 
@@ -183,7 +186,7 @@ export default async function Page({ searchParams }: PageProps) {
         </header>
         <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
           <VizSandbox config={visualization} />
-          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />}/>
+          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />} chatContent={<ChatSection subject="physics" />}/>
         </main>
       </main>
     );
