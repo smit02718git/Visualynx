@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from viz_engine import generate_visualization_data
@@ -6,6 +6,8 @@ from learn_engine import explain_concept
 from formulas_engine import get_concept_formulas
 from common_mistakes_engine import get_concept_mistakes
 from chat_engine import subject_chatbot
+from quiz_engine import generate_quiz
+from topic_validator import validate_topic
 import uvicorn
 
 app = FastAPI()
@@ -22,6 +24,12 @@ app.add_middleware(
 class InputData(BaseModel):
     subject: str
     topic: str
+
+class TopicValidationInput(InputData):
+    pass
+
+class QuizInput(InputData):
+    count: int
 
 class ChatMessage(BaseModel):
     role: str
@@ -40,6 +48,19 @@ async def process_data(data: InputData):
     topic = data.topic
 
     return await generate_visualization_data(subject, topic)
+
+@app.post("/api/validate-topic")
+async def topic_validation(data: TopicValidationInput):
+    try:
+        result = await validate_topic(data.subject, data.topic)
+    except Exception as error:
+        raise HTTPException(status_code=503, detail=f"Topic validation is temporarily unavailable: {error}") from error
+    if not result.get("is_related", False):
+        return {
+            "is_related": False,
+            "message": f"This concept is not related to {data.subject}.",
+        }
+    return {"is_related": True}
 
 @app.post("/api/learn")
 async def learn_concept(data: InputData):
@@ -68,6 +89,11 @@ async def chat(data: ChatInput):
         history=data.history.model_dump(),
         subject=data.subject,
     )
+
+@app.post("/api/quiz")
+async def quiz(data: QuizInput):
+    count = max(5, min(data.count, 30))
+    return await generate_quiz(data.subject, data.topic, count)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)

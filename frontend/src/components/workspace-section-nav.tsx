@@ -8,11 +8,14 @@ import {
     CirclePlay,
     MessageCircleDashed,
 } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
 
 type WorkspaceSection = 'learn' | 'formulas' | 'mistakes' | 'ask-ai' | 'quiz'
 
 type WorkspaceSectionNavProps = {
+    subject: string
+    concept: string
     learnContent: ReactNode
     formulasContent: ReactNode
     mistakesContent: ReactNode
@@ -36,8 +39,19 @@ const placeholderContent: Record<Exclude<WorkspaceSection, 'learn' | 'quiz'>, st
     'ask-ai': 'This is the Ask AI section.',
 }
 
-export default function WorkspaceSectionNav({ learnContent, formulasContent, mistakesContent, chatContent }: WorkspaceSectionNavProps) {
-    const [activeSection, setActiveSection] = useState<WorkspaceSection>('learn')
+export default function WorkspaceSectionNav({ subject, concept, learnContent, formulasContent, mistakesContent, chatContent }: WorkspaceSectionNavProps) {
+    const storageKey = `visualynx-workspace-section:${subject}:${concept}`
+    const returnTo = `/workspace/${subject}?concept=${encodeURIComponent(concept)}`
+    const [activeSection, setActiveSection] = useState<WorkspaceSection>(() => {
+        if (typeof window === 'undefined') return 'learn'
+        const savedSection = window.sessionStorage.getItem(storageKey) as WorkspaceSection | null
+        return savedSection && savedSection !== 'quiz' ? savedSection : 'learn'
+    })
+
+    function selectSection(section: WorkspaceSection) {
+        setActiveSection(section)
+        window.sessionStorage.setItem(storageKey, section)
+    }
 
     return (
         <section className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:justify-end">
@@ -67,7 +81,7 @@ export default function WorkspaceSectionNav({ learnContent, formulasContent, mis
                         <button
                             type="button"
                             aria-current={activeSection === id ? 'page' : undefined}
-                            onClick={() => setActiveSection(id)}
+                            onClick={() => selectSection(id)}
                             className={`flex min-h-16 min-w-16 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.68rem] font-medium transition lg:w-full ${
                                 activeSection === id
                                     ? 'bg-[#eaf1ff] text-[#2563eb]'
@@ -81,10 +95,9 @@ export default function WorkspaceSectionNav({ learnContent, formulasContent, mis
                 ))}
 
                 <div className="hidden h-px w-12 bg-[#e4e8ef] lg:block" />
-                <button
-                    type="button"
+                <Link
+                    href={`/workspace/quiz?subject=${encodeURIComponent(subject)}&concept=${encodeURIComponent(concept)}&returnTo=${encodeURIComponent(returnTo)}`}
                     aria-current={activeSection === 'quiz' ? 'page' : undefined}
-                    onClick={() => setActiveSection('quiz')}
                     className={`mt-1 flex min-h-16 min-w-16 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-[0.68rem] font-medium transition lg:w-full ${
                         activeSection === 'quiz'
                             ? 'bg-[#2563eb] text-white'
@@ -93,7 +106,7 @@ export default function WorkspaceSectionNav({ learnContent, formulasContent, mis
                 >
                     <CirclePlay className="h-5 w-5" strokeWidth={2.2} />
                     <span>Take Quiz</span>
-                </button>
+                </Link>
             </nav>
         </section>
     )

@@ -198,6 +198,7 @@ export function SubjectWorkspacePage({
                             <button
                                 key={chip}
                                 type="button"
+                                onClick={() => setTopic(chip)}
                                 className="rounded-full border border-[#dfe7f2] bg-white/80 px-3 py-1 text-sm text-[#364a67] shadow-[0_4px_10px_rgba(156,171,196,0.08)] transition hover:border-[#cfe0fb] hover:bg-[#f7faff]"
                             >
                                 {chip}

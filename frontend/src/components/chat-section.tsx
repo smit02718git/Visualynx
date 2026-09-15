@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import rehypeKatex from 'rehype-katex'
 import remarkGfm from 'remark-gfm'
@@ -16,10 +16,24 @@ type ChatSectionProps = {
 }
 
 export default function ChatSection({ subject }: ChatSectionProps) {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const storageKey = `visualynx-chat:${subject}`
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    if (typeof window === 'undefined') return []
+    const saved = window.sessionStorage.getItem(storageKey)
+    if (!saved) return []
+    try {
+      return JSON.parse(saved) as ChatMessage[]
+    } catch {
+      return []
+    }
+  })
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    window.sessionStorage.setItem(storageKey, JSON.stringify(messages))
+  }, [messages, storageKey])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

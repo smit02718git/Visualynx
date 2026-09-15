@@ -10,10 +10,8 @@ import FormulaSection from '@/components/formulas-section';
 import CommonMistakesSection from '@/components/common-mistakes-section';
 import ChatSection from '@/components/chat-section';
 import WorkspaceSectionNav from "@/components/workspace-section-nav";
-import type { VisualizationConfig } from "@/types/visualization";
-import type { ConceptExplanationData } from "@/types/explaination";
-import type { ConceptFormulasData } from "@/types/formulas";
-import type { ConceptMistakesData } from '@/types/mistakes';
+import { getWorkspaceData } from '@/lib/workspace-data';
+import { validateTopic } from '@/lib/topic-validation';
 
 interface PageProps {
   searchParams: Promise<{ concept?: string }>;
@@ -33,99 +31,19 @@ export default async function Page({ searchParams }: PageProps) {
     redirect('/login')
   }
 
-  // Check if a specific concept query parameter is passed
   if (concept) {
-
-    async function getVisualizationData() {
-      // Call the specific FastAPI visualization endpoint
-      const res = await fetch('http://127.0.0.1:8000/api/visualization', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: "physics",
-          topic: concept
-        }),
-        cache: 'no-store', // Ensures fresh data calculation on every render
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch visualization payload');
-      }
-
-      return res.json();
+    const validation = await validateTopic('physics', concept)
+    if (!validation.is_related) {
+      return (
+        <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center">
+          <div className="max-w-lg rounded-2xl border border-[#e1e7ef] bg-white p-8 shadow-sm">
+            <p className="text-lg font-semibold text-[#1d2433]">{validation.message || 'This concept is not related to physics.'}</p>
+            <Link href="/workspace/physics" className="mt-6 inline-flex rounded-xl bg-[#2f6fe0] px-4 py-2 text-sm font-semibold text-white">Choose another concept</Link>
+          </div>
+        </main>
+      )
     }
-
-    async function getExplainationData() {
-      // Call the specific FastAPI visualization endpoint
-      const res = await fetch('http://127.0.0.1:8000/api/learn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: "physics",
-          topic: concept
-        }),
-        cache: 'no-store', // Ensures fresh data calculation on every render
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch explanation data');
-      }
-
-      return res.json();
-    }
-
-    async function getFormulas() {
-      // Call the specific FastAPI visualization endpoint
-      const res = await fetch('http://127.0.0.1:8000/api/formulas', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: "physics",
-          topic: concept
-        }),
-        cache: 'no-store', // Ensures fresh data calculation on every render
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch formulas');
-      }
-
-      return res.json();
-    }
-
-    async function getMistakes() {
-      // Call the specific FastAPI visualization endpoint
-      const res = await fetch('http://127.0.0.1:8000/api/mistakes', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          subject: "physics",
-          topic: concept
-        }),
-        cache: 'no-store', // Ensures fresh data calculation on every render
-      });
-
-      if (!res.ok) {
-        throw new Error('Failed to fetch common mistakes');
-      }
-
-      return res.json();
-    }
-
-    const [visualization, explaination, formulas, mistakes] = await Promise.all([
-      getVisualizationData(),
-      getExplainationData(),
-      getFormulas(),
-      getMistakes(),
-    ]) as [VisualizationConfig, ConceptExplanationData, ConceptFormulasData, ConceptMistakesData];
+    const { visualization, explaination, formulas, mistakes } = await getWorkspaceData('physics', concept)
     const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'
     const emailAddress = user.email || 'No email available'
 
@@ -186,7 +104,7 @@ export default async function Page({ searchParams }: PageProps) {
         </header>
         <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
           <VizSandbox config={visualization} />
-          <WorkspaceSectionNav learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />} chatContent={<ChatSection subject="physics" />}/>
+          <WorkspaceSectionNav subject="physics" concept={concept} learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />} chatContent={<ChatSection subject="physics" />}/>
         </main>
       </main>
     );

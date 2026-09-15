@@ -186,11 +186,11 @@ export default async function DashboardPage() {
                   </button>
                 </Link>
               ))}
-              <button
-                type="button"
-                className={'rounded-lg px-4 py-2 text-sm text-[#394760] transition hover:bg-[#eef3fb]'}>
-                QUIZ
-              </button>
+              <Link href="/workspace/quiz">
+                <button type="button" className={'rounded-lg px-4 py-2 text-sm text-[#394760] transition hover:bg-[#eef3fb]'}>
+                  QUIZ
+                </button>
+              </Link>
             </nav>
 
             <details className="relative justify-self-end">
@@ -290,12 +290,12 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <button
-              type="button"
+            <Link
+              href="/workspace/quiz"
               className="inline-flex items-center justify-center rounded-xl bg-linear-to-r from-[#2f6de0] to-[#2d4ce0] px-6 py-4 text-[1.08rem] font-semibold text-white shadow-lg transition duration-300 hover:brightness-80"
             >
               Start a Quick Quiz <span className="ml-2 text-lg">→</span>
-            </button>
+            </Link>
           </section>
         </main>
       </div>
