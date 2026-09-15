@@ -1,6 +1,5 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from viz_engine import generate_visualization_data
 from learn_engine import explain_concept
 from formulas_engine import get_concept_formulas
@@ -8,6 +7,7 @@ from common_mistakes_engine import get_concept_mistakes
 from chat_engine import subject_chatbot
 from quiz_engine import generate_quiz
 from topic_validator import validate_topic
+from schemas import ChatInput, QuizInput, TopicInput
 import uvicorn
 
 app = FastAPI()
@@ -21,36 +21,12 @@ app.add_middleware(
     allow_headers=["*"],                      
 )
 
-class InputData(BaseModel):
-    subject: str
-    topic: str
-
-class TopicValidationInput(InputData):
-    pass
-
-class QuizInput(InputData):
-    count: int
-
-class ChatMessage(BaseModel):
-    role: str
-    content: str
-
-class ChatHistory(BaseModel):
-    messages: list[ChatMessage]
-
-class ChatInput(BaseModel):
-    subject: str
-    history: ChatHistory
-    
 @app.post("/api/visualization")
-async def process_data(data: InputData):
-    subject = data.subject
-    topic = data.topic
-
-    return await generate_visualization_data(subject, topic)
+async def process_data(data: TopicInput):
+    return await generate_visualization_data(data.subject, data.topic)
 
 @app.post("/api/validate-topic")
-async def topic_validation(data: TopicValidationInput):
+async def topic_validation(data: TopicInput):
     try:
         result = await validate_topic(data.subject, data.topic)
     except Exception as error:
@@ -63,25 +39,16 @@ async def topic_validation(data: TopicValidationInput):
     return {"is_related": True}
 
 @app.post("/api/learn")
-async def learn_concept(data: InputData):
-    subject = data.subject
-    topic = data.topic
-
-    return await explain_concept(subject, topic)
+async def learn_concept(data: TopicInput):
+    return await explain_concept(data.subject, data.topic)
 
 @app.post("/api/formulas")
-async def concept_formulas(data: InputData):
-    subject = data.subject
-    topic = data.topic
-
-    return await get_concept_formulas(subject, topic)
+async def concept_formulas(data: TopicInput):
+    return await get_concept_formulas(data.subject, data.topic)
 
 @app.post("/api/mistakes")
-async def common_mistakes(data: InputData):
-    subject = data.subject
-    topic = data.topic
-
-    return await get_concept_mistakes(subject, topic)
+async def common_mistakes(data: TopicInput):
+    return await get_concept_mistakes(data.subject, data.topic)
 
 @app.post("/api/chat")
 async def chat(data: ChatInput):

@@ -1,8 +1,8 @@
-import os
 from dotenv import load_dotenv
 from typing import List
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
+from gemini_client import invoke_with_fallback
 
 load_dotenv()
 
@@ -38,20 +38,6 @@ async def get_concept_mistakes(subject: str, concept: str) -> dict:
     """
     Fetches a structured analysis of common mistakes for a given concept in a subject.
     """
-    api_key = os.getenv("GEMINI_API_KEY_4")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY_4 environment variable is missing.")
-
-    # Initialize the Gemini LLM
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        temperature=0.2,
-    )
-
-    # Bind the structured output schema
-    structured_llm = llm.with_structured_output(ConceptMistakes)
-
     # System prompt to guide the AI persona and output quality
     system_prompt = (
         "You are an expert tutor and academic mentor. Your goal is to identify common "
@@ -73,7 +59,11 @@ async def get_concept_mistakes(subject: str, concept: str) -> dict:
         ("human", user_prompt)
     ]
 
-    response = await structured_llm.ainvoke(messages)
+    response = await invoke_with_fallback(
+        messages,
+        lambda llm: llm.with_structured_output(ConceptMistakes),
+        preferred_key=4,
+    )
 
     if isinstance(response, BaseModel):
         return response.model_dump() if hasattr(response, "model_dump") else response.dict()

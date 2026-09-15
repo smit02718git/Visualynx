@@ -12,6 +12,7 @@ import ChatSection from '@/components/chat-section';
 import WorkspaceSectionNav from "@/components/workspace-section-nav";
 import { getWorkspaceData } from '@/lib/workspace-data';
 import { validateTopic } from '@/lib/topic-validation';
+import { InvalidTopicState } from '@/components/invalid-topic-state';
 
 interface PageProps {
   searchParams: Promise<{ concept?: string }>;
@@ -34,14 +35,7 @@ export default async function Page({ searchParams }: PageProps) {
   if (concept) {
     const validation = await validateTopic('physics', concept)
     if (!validation.is_related) {
-      return (
-        <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-center">
-          <div className="max-w-lg rounded-2xl border border-[#e1e7ef] bg-white p-8 shadow-sm">
-            <p className="text-lg font-semibold text-[#1d2433]">{validation.message || 'This concept is not related to physics.'}</p>
-            <Link href="/workspace/physics" className="mt-6 inline-flex rounded-xl bg-[#2f6fe0] px-4 py-2 text-sm font-semibold text-white">Choose another concept</Link>
-          </div>
-        </main>
-      )
+      return <InvalidTopicState subject="physics" returnPath="/workspace/physics" accentClass="bg-[#2f6fe0]" message={validation.message} />
     }
     const { visualization, explaination, formulas, mistakes } = await getWorkspaceData('physics', concept)
     const displayName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'User'

@@ -1,10 +1,5 @@
-import os
-
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
-
-load_dotenv()
+from gemini_client import invoke_with_fallback
 
 
 class TopicRelevance(BaseModel):
@@ -12,19 +7,7 @@ class TopicRelevance(BaseModel):
 
 
 async def validate_topic(subject: str, topic: str) -> dict:
-    api_key = os.getenv("GEMINI_API_KEY_5")
-    if not api_key:
-        raise ValueError("Missing GEMINI_API_KEY_5 value inside server configuration.")
-
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        temperature=0,
-        timeout=30,
-        max_retries=1,
-    )
-    structured_llm = llm.with_structured_output(TopicRelevance)
-    response = await structured_llm.ainvoke([
+    response = await invoke_with_fallback([
         (
             "system",
             "You classify whether a student topic belongs to the selected academic subject. "
@@ -35,7 +18,7 @@ async def validate_topic(subject: str, topic: str) -> dict:
             "human",
             f"Selected subject: {subject}\nStudent topic: {topic}\nIs the topic related to the selected subject?"
         ),
-    ])
+    ], lambda llm: llm.with_structured_output(TopicRelevance), preferred_key=3, temperature=0, timeout=30)
 
     if isinstance(response, BaseModel):
         return response.model_dump()

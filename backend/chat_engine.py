@@ -1,9 +1,5 @@
-import os
-from dotenv import load_dotenv
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-
-load_dotenv()
+from gemini_client import invoke_with_fallback
 
 
 async def subject_chatbot(history: dict, subject: str) -> dict:
@@ -17,17 +13,6 @@ async def subject_chatbot(history: dict, subject: str) -> dict:
     Returns:
         dict: The updated history dictionary containing the new AI message.
     """
-    api_key = os.getenv("GEMINI_API_KEY_5")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY_5 environment variable is missing.")
-
-    # Initialize Gemini LLM
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        temperature=0.3,
-    )
-
     # System prompt enforcing the subject boundary
     system_prompt_text = (
         f"You are a helpful academic tutor specializing exclusively in {subject}. "
@@ -46,8 +31,12 @@ async def subject_chatbot(history: dict, subject: str) -> dict:
         elif msg["role"] == "ai":
             formatted_messages.append(AIMessage(content=msg["content"]))
 
-    # Call Gemini model
-    ai_response = await llm.ainvoke(formatted_messages)
+    ai_response = await invoke_with_fallback(
+        formatted_messages,
+        lambda llm: llm,
+        preferred_key=3,
+        temperature=0.3,
+    )
 
     response_content = ai_response.content
     if isinstance(response_content, list):

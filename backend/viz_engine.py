@@ -1,14 +1,7 @@
 # backend/viz_engine.py
 
-import os
-
-from dotenv import load_dotenv
 from pydantic import BaseModel, Field
-from langchain_google_genai import ChatGoogleGenerativeAI
-
-
-# Load environment variables safely.
-load_dotenv()
+from gemini_client import invoke_with_fallback
   
 
 # ============================================================
@@ -152,24 +145,6 @@ class VizConfigSchema(BaseModel):
 # ============================================================
 
 async def generate_visualization_data(subject: str, concept: str) -> dict:
-    api_key = os.getenv("GEMINI_API_KEY_1")
-
-    if not api_key:
-        raise ValueError(
-            "Missing GEMINI_API_KEY_1 value inside server configuration."
-        )
-
-    # Initialize Gemini.
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        timeout=60,
-        max_retries=1,
-    )
-
-    # Enable structured output.
-    structured_llm = llm.with_structured_output(VizConfigSchema)
-
     # ========================================================
     # SYSTEM INSTRUCTION
     # ========================================================
@@ -547,11 +522,14 @@ Generate the complete interactive visualization configuration.
     # GENERATE STRUCTURED RESPONSE
     # ========================================================
 
-    response_model = await structured_llm.ainvoke(
+    response_model = await invoke_with_fallback(
         [
             ("system", system_instruction),
             ("user", user_prompt),
-        ]
+        ],
+        lambda llm: llm.with_structured_output(VizConfigSchema),
+        preferred_key=1,
+        timeout=60,
     )
 
     # ========================================================

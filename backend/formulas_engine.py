@@ -1,7 +1,7 @@
-import os
 from typing import List
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
+from gemini_client import invoke_with_fallback
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,19 +41,6 @@ async def get_concept_formulas(subject: str, concept: str) -> dict:
     """
     Fetches structured formula details for a given concept in a subject.
     """
-    api_key = os.getenv("GEMINI_API_KEY_3")
-    if not api_key:
-        raise ValueError("GEMINI_API_KEY_3 environment variable is missing.")
-
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        temperature=0.2,
-    )
-
-    # Enforce structured output schema
-    structured_llm = llm.with_structured_output(ConceptFormulas)
-
     # System prompt to instruct the AI
     system_prompt = (
         "You are an expert STEM educator and tutor. Your task is to extract and break down "
@@ -76,7 +63,11 @@ async def get_concept_formulas(subject: str, concept: str) -> dict:
         ("human", user_prompt)
     ]
 
-    response = await structured_llm.ainvoke(messages)
+    response = await invoke_with_fallback(
+        messages,
+        lambda llm: llm.with_structured_output(ConceptFormulas),
+        preferred_key=5,
+    )
 
     if isinstance(response, BaseModel):
         return response.model_dump() if hasattr(response, "model_dump") else response.dict()

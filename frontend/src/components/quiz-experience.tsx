@@ -88,10 +88,9 @@ export default function QuizExperience({ subject: initialSubject, concept: initi
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ subject, topic: concept }),
         })
-        const validation = await validationResponse.json() as { is_related?: boolean; message?: string }
+        const validation = await validationResponse.json() as { is_related?: boolean; message?: string; detail?: string }
         if (!validationResponse.ok) {
-          const error = await validationResponse.json().catch(() => null) as { detail?: string } | null
-          throw new Error(error?.detail || validation.message || 'Topic validation failed')
+          throw new Error(validation.detail || validation.message || 'Topic validation failed')
         }
         if (!validation.is_related) {
           setValidationError(validation.message || `This concept is not related to ${subject}.`)

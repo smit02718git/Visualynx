@@ -1,8 +1,8 @@
-import os
 from dotenv import load_dotenv
 from typing import Optional
 from pydantic import BaseModel, Field
 from langchain_google_genai import ChatGoogleGenerativeAI
+from gemini_client import invoke_with_fallback
 
 load_dotenv()  
 
@@ -30,23 +30,6 @@ async def explain_concept(subject: str, concept: str) -> ConceptExplanation:
     Generates a structured explanation for a given concept in a subject using LangChain and Gemini.
     """
 
-    api_key = os.getenv("GEMINI_API_KEY_2")
-
-    if not api_key:
-        raise ValueError(
-            "Missing GEMINI_API_KEY_2 value inside server configuration."
-        )
-
-    llm = ChatGoogleGenerativeAI(
-        model="gemini-3.5-flash",
-        google_api_key=api_key,
-        timeout=60,
-        max_retries=1,
-    )
-
-    # Enforce the structured output schema
-    structured_llm = llm.with_structured_output(ConceptExplanation)
-
     # Define system prompt
     system_prompt = (
         "You are an expert educator. Your task is to break down academic or technical concepts "
@@ -67,7 +50,12 @@ async def explain_concept(subject: str, concept: str) -> ConceptExplanation:
         ("human", user_prompt)
     ]
 
-    response = await structured_llm.ainvoke(messages)
+    response = await invoke_with_fallback(
+        messages,
+        lambda llm: llm.with_structured_output(ConceptExplanation),
+        preferred_key=2,
+        timeout=60,
+    )
 
     if isinstance(response, BaseModel):
         return response.model_dump() if hasattr(response, "model_dump") else response.dict()
