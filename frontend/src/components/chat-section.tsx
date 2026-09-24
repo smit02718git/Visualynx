@@ -70,7 +70,7 @@ export default function ChatSection({ subject }: ChatSectionProps) {
   }
 
   return (
-    <div className="zoom-[1.1] h-screen flex min-h-96 flex-col p-4 text-zinc-900 sm:p-6">
+    <div className="h-screen flex min-h-96 flex-col p-4 text-zinc-900 sm:p-6">
       <div className="mb-5 border-b border-zinc-100 pb-4">
         <h2 className="mt-2 text-2xl font-bold">Your {subject === 'maths' ? 'mathematics' : subject} tutor</h2>
         <p className="mt-1 text-sm text-zinc-500">Ask a question and keep the conversation focused.</p>

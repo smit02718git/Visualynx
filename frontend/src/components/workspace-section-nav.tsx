@@ -54,8 +54,8 @@ export default function WorkspaceSectionNav({ subject, concept, learnContent, fo
     }
 
     return (
-        <section className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-row lg:justify-end">
-            <div className="min-w-0 flex-1 rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-[0_12px_28px_rgba(135,155,185,0.12)]">
+        <section className="zoom-[0.8] flex min-h-0 min-w-0 flex-1 flex-col gap-4 lg:h-full lg:flex-row lg:justify-end">
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-[0_12px_28px_rgba(135,155,185,0.12)]">
                 <div className={activeSection === 'learn' ? '' : 'hidden'}>{learnContent}</div>
                 <div className={activeSection === 'formulas' ? '' : 'hidden'}>{formulasContent}</div>
                 <div className={activeSection === 'mistakes' ? '' : 'hidden'}>{mistakesContent}</div>

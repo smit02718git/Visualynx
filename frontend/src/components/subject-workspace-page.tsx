@@ -159,7 +159,7 @@ export function SubjectWorkspacePage({
 
                     <h1
                         className={
-                            `mt-6 bg-linear-to-r ${accent} bg-clip-text text-center text-6xl font-black leading-[0.92] tracking-[-0.07em] text-transparent`
+                            `mt-6 py-2 bg-linear-to-r ${accent} bg-clip-text text-center text-6xl font-black leading-[0.92] tracking-[-0.07em] text-transparent`
                         }
                     >
                         {title}

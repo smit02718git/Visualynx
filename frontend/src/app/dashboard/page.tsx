@@ -211,14 +211,7 @@ export default async function DashboardPage() {
                   </div>
                 </div>
 
-                <form
-                  action={async () => {
-                    'use server'
-                    const supabase = await createClient()
-                    await supabase.auth.signOut()
-                    redirect('/login')
-                  }}
-                >
+                <form action="/api/auth/signout" method="post">
                   <button
                     type="submit"
                     className="w-full rounded-xl border border-[#dfe4ec] bg-[#f8fafc] px-3 py-2 text-sm font-medium text-[#1d2433] transition hover:bg-[#eef3fb]"
@@ -233,7 +226,7 @@ export default async function DashboardPage() {
 
         <main className="mx-auto max-w-300 px-6 pb-10 pt-8">
           <section className="flex flex-col items-center pt-3 text-center">
-            <h1 className="bg-linear-to-tr from-[#2563eb] via-[#cbd5e1] to-[#6366f1] bg-clip-text text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-transparent">
+            <h1 className="py-2 bg-linear-to-tr from-[#2563eb] via-[#cbd5e1] to-[#6366f1] bg-clip-text text-5xl font-semibold leading-[0.96] tracking-[-0.06em] text-transparent">
               What do you want to understand?
             </h1>
             <p className="mt-4 text-md text-[#576272]">

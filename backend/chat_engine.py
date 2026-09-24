@@ -52,25 +52,3 @@ async def subject_chatbot(history: dict, subject: str) -> dict:
     })
 
     return history
-
-
-# Example Usage
-if __name__ == "__main__":
-    conversation_history = {
-        "messages": [
-            {"role": "user", "content": "What is Newton's second law?"},
-            {"role": "ai", "content": "Newton's second law states that Force equals mass times acceleration (F = ma)."},
-            {"role": "user", "content": "Can you tell me a recipe for chocolate cake?"}
-        ]
-    }
-
-    current_subject = "Physics"
-
-    updated_history = subject_chatbot(
-        history=conversation_history, 
-        subject=current_subject
-    )
-
-    # Print the latest response added to history
-    print("Latest AI Response:")
-    print(updated_history["messages"][-1]["content"])

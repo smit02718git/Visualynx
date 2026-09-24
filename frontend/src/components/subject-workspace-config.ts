@@ -46,7 +46,7 @@ export function getSubjectPageConfig(subject: 'physics' | 'chemistry' | 'maths')
             ringColor: 'focus-within:ring-[#2f6fe0]',
             badgeText: 'Build Learning Experience →',
             promptPlaceholder: 'e.g. Projectile Motion, Newton\'s Laws, Circular Motion...',
-            chips: ['Projectile Motion', 'Newton\'s Laws', 'Work & Energy', 'Waves', 'Circular Motion', 'Gravity'],
+            chips: ['Projectile Motion', 'Law of motion', 'Waves', 'Circular Motion', 'Gravity', 'Light - Reflection and Refraction'],
             features: defaultFeatureTiles,
         },
         chemistry: {
@@ -59,7 +59,7 @@ export function getSubjectPageConfig(subject: 'physics' | 'chemistry' | 'maths')
             ringColor: 'focus-within:ring-[#d8842d]',
             badgeText: 'Build Learning Experience →',
             promptPlaceholder: 'e.g. Acids & Bases, Bonding, Stoichiometry...',
-            chips: ['Acids & Bases', 'Bonding', 'Redox', 'Solutions', 'Equilibrium', 'Thermochemistry'],
+            chips: ['chemical kinetics', 'Bonding', 'Redox', 'Solutions', 'Equilibrium', 'Thermochemistry'],
             features: defaultFeatureTiles,
         },
         maths: {
@@ -72,7 +72,7 @@ export function getSubjectPageConfig(subject: 'physics' | 'chemistry' | 'maths')
             ringColor: 'focus-within:ring-[#3b9d74]',
             badgeText: 'Build Learning Experience →',
             promptPlaceholder: 'e.g. Calculus, Trigonometry, Algebraic Functions...',
-            chips: ['Calculus', 'Algebra', 'Geometry', 'Trigonometry', 'Probability', 'Functions'],
+            chips: ['deravatives', 'linear transformation', 'quadratic equation', 'vector 3d', 'Probability', 'Pythagorean Theorem'],
             features: defaultFeatureTiles,
         },
     } as const

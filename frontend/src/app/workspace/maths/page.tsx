@@ -42,8 +42,8 @@ export default async function Page({ searchParams }: PageProps) {
     const emailAddress = user.email || 'No email available'
 
     return (
-      <main className="zoom-[0.8]">
-        <header className="border-b border-[#dfe4ec] bg-[#f3f4f6]/95 backdrop-blur-sm">
+      <main className="">
+        <header className="zoom-[0.8] border-b border-[#dfe4ec] bg-[#f3f4f6]/95 backdrop-blur-sm">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
             <div className="flex items-center gap-3">
               <BrandMark className="scale-130 origin-left" />
@@ -96,7 +96,7 @@ export default async function Page({ searchParams }: PageProps) {
             </div>
           </div>
         </header>
-        <main className="flex min-h-screen justify-left bg-slate-50 p-6 gap-7">
+        <main className="flex min-h-screen justify-left gap-7 bg-slate-50 p-6 lg:h-[calc(100dvh-4rem)] lg:min-h-0 lg:overflow-hidden">
           <VizSandbox config={visualization} />
           <WorkspaceSectionNav subject="maths" concept={concept} learnContent={<ConceptCard data={explaination} />} formulasContent={<FormulaSection data={formulas} />} mistakesContent={<CommonMistakesSection data={mistakes} />} chatContent={<ChatSection subject="maths" />}/>
         </main>

@@ -1,5 +1,4 @@
 import os
-import re
 from collections.abc import Callable, Sequence
 from typing import Any
 
@@ -9,18 +8,11 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 load_dotenv()
 
 DEFAULT_MODEL = "gemini-3.5-flash"
-SERVICE_UNAVAILABLE_MODEL = "gemini-3.6-flash"
 API_KEY_SLOTS = tuple(range(1, 7))
 
 
 def _key_order(preferred_key: int) -> list[int]:
-    fallback_slots = API_KEY_SLOTS if preferred_key == 1 else tuple(range(2, 7))
-    return [preferred_key, *(key for key in fallback_slots if key != preferred_key)]
-
-
-def _is_service_unavailable(error: Exception) -> bool:
-    status_code = getattr(error, "status_code", None) or getattr(error, "code", None)
-    return status_code == 503 or bool(re.search(r"\b503\b|service unavailable", str(error), re.IGNORECASE))
+    return [preferred_key, *(key for key in API_KEY_SLOTS if key != preferred_key)]
 
 
 def _client(model: str, api_key: str, temperature: float, timeout: int, max_retries: int) -> ChatGoogleGenerativeAI:
@@ -55,8 +47,6 @@ async def invoke_with_fallback(
             return await runnable.ainvoke(messages)
         except Exception as error:
             last_error = error
-            if _is_service_unavailable(error):
-                model = SERVICE_UNAVAILABLE_MODEL
 
     if last_error:
         raise RuntimeError("All configured Gemini API keys failed.") from last_error
